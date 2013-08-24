@@ -9,12 +9,14 @@ boolean debug= false;
 
 int chan = 2;
 
+
 int firstPin=11; //lowest pin out the outputs  probably 2
 byte incomingByte;
 byte note;
 byte pNote;
 byte velocity;
 byte currentNote;
+byte notesPlaying;
 
 float scaleCalc; 
 float potValue;
@@ -202,28 +204,31 @@ void playNote(byte note, byte velocity){
 
  //since we don't want to "play" all notes we wait for a note in range
  if(note>=lowNote && note<lowNote+numNotes){
-   if(value==HIGH){
+   if(value==HIGH && notesPlaying<numOuts){
   
-   for(int i = 0; i<numOuts; i++){ 
+   for(int i = 0; i<numOuts-1; i++){ 
   if(pulseState[i]==false){
    pulseState[i]=true;
    restTime[i]=restVals[note-lowNote];
-  strikeTime[i]=strikeVals[note-lowNote];
+   strikeTime[i]=strikeVals[note-lowNote];
    lastNote[i]=note;
+   notesPlaying++;
    break;  
 }
    }
    
     }
    if(value==LOW){
-      for(int i = 0; i<numOuts; i++){ 
+      for(int i = 0; i<numOuts-1; i++){ 
      if(lastNote[i] == note && pulseState[i]){
      pulseState[i]=false;
+     notesPlaying--;
      }
       }
     
    } 
  }
+
 }
 
 void pulse(int p){
